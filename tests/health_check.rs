@@ -1,6 +1,7 @@
 use std::fmt::format;
 use std::net::TcpListener;
 
+
 #[tokio::test]
 async fn health_check_works() {
     // Arrange
@@ -74,7 +75,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
      let listener = TcpListener::bind("127.0.0.1:0")
          .expect("Failed to bind random port");
      let port = listener.local_addr().unwrap().port();
-    let server = zero2prod::run(listener).expect("Failed to bind address");
+    let server = zero2prod::startup::run(listener).expect("Failed to bind address");
 
      // launch the server as a backgroud task
      // tokio::spawn returns a handle to the spawned future
