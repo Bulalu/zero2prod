@@ -1,12 +1,12 @@
 use crate::routes::{health_check, subscribe};
 use actix_web::{web, App, HttpServer, dev::Server};
-use sqlx::PgConnection;
+use sqlx::PgPool;
 use std::net::TcpListener;
 
 // Function to start and run the HTTP server.
-pub fn run(listener: TcpListener, connection: PgConnection) -> Result<Server, std::io::Error> {
+pub fn run(listener: TcpListener, db_pool: PgPool) -> Result<Server, std::io::Error> {
     // Wrap the database connection in Actix web::Data for sharing across handlers.
-    let connection = web::Data::new(connection);
+    let db_pool = web::Data::new(db_pool);
 
     // Start building the Actix web server.
     let server = HttpServer::new(move || {
@@ -17,7 +17,7 @@ pub fn run(listener: TcpListener, connection: PgConnection) -> Result<Server, st
             // Attach the `subscribe` handler to `/subscriptions` route.
             .route("/subscriptions", web::post().to(subscribe))
             // Attach the cloned database connection to the App.
-            .app_data(connection.clone())
+            .app_data(db_pool.clone())
     })
         // Bind the server to the provided TcpListener.
         .listen(listener)?

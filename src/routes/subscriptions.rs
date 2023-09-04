@@ -1,5 +1,7 @@
 use actix_web::{web, HttpResponse};
-
+use sqlx::PgPool;
+use chrono::Utc;
+use uuid::Uuid;
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
@@ -11,6 +13,26 @@ pub struct FormData {
 // your handler does not have to deal with the raw incoming request and
 // can instead work directly with strongly-typed information,
 // significantly simplifying the code that you need to write to handle a request
-pub async fn subscribe(_form: web::Form<FormData>) -> HttpResponse {
-    HttpResponse::Ok().finish()
+pub async fn subscribe(
+    _form: web::Form<FormData>,
+    // Retrieving the database connection from the App state
+    pool: web::Data<PgPool>
+
+) -> HttpResponse {
+
+   match sqlx::query!(
+        r#"
+        INSERT INTO subscriptions (id, email, name, subscribed_at)
+        VALUES ($1, $2, $3, $4)
+        "#,
+        Uuid::new_v4(),
+        _form.email,
+        _form.name,
+        Utc::now()
+    ).execute(pool.as_ref())
+        .await {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(_) => HttpResponse::InternalServerError().finish()
+    }
+
 }
