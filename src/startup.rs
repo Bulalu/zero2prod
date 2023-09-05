@@ -2,6 +2,8 @@ use crate::routes::{health_check, subscribe};
 use actix_web::{web, App, HttpServer, dev::Server};
 use sqlx::PgPool;
 use std::net::TcpListener;
+use actix_web::middleware::Logger;
+
 
 // Function to start and run the HTTP server.
 pub fn run(listener: TcpListener, db_pool: PgPool) -> Result<Server, std::io::Error> {
@@ -13,6 +15,7 @@ pub fn run(listener: TcpListener, db_pool: PgPool) -> Result<Server, std::io::Er
         // Create a new Actix App.
         App::new()
             // Attach the `health_check` handler to `/health_check` route.
+            .wrap(Logger::default())
             .route("/health_check", web::get().to(health_check))
             // Attach the `subscribe` handler to `/subscriptions` route.
             .route("/subscriptions", web::post().to(subscribe))
