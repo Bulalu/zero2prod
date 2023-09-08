@@ -1,9 +1,9 @@
 use crate::routes::{health_check, subscribe};
-use actix_web::{web, App, HttpServer, dev::Server};
+use actix_web::{web, App, HttpServer, dev::Server, web::Data};
 use sqlx::PgPool;
 use std::net::TcpListener;
 use actix_web::middleware::Logger;
-
+use tracing_actix_web::TracingLogger;
 
 // Function to start and run the HTTP server.
 pub fn run(listener: TcpListener, db_pool: PgPool) -> Result<Server, std::io::Error> {
