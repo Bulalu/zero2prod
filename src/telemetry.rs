@@ -4,7 +4,7 @@ use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
 use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
 use tracing_subscriber::fmt::MakeWriter;
-use std::io::Sink;
+
 
 
 pub fn get_subscriber<Sink>(
