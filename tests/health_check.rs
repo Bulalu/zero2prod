@@ -5,6 +5,9 @@ use zero2prod::telemetry::{get_subscriber, init_subscriber};
 use zero2prod::startup::run;
 use uuid::Uuid;
 use once_cell::sync::Lazy;
+use secrecy::{Secret, ExposeSecret, DebugSecret};
+
+
 
 static TRACING: Lazy<()> = Lazy::new(|| {
     let default_filter_level = "info".to_string();
@@ -47,7 +50,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     let app = spawn_app().await;
     let configuration = get_configuration().expect("Failed to read configuration");
     let connection_string = configuration.database.connection_string();
-    let mut connection = PgConnection::connect(&connection_string)
+    let mut connection = PgConnection::connect(&connection_string.expose_secret())
         .await
         .expect("Failed to connect to Postgres.");
     let client = reqwest::Client::new();
@@ -123,8 +126,6 @@ async fn spawn_app() -> TestApp {
 
 
 
-
-
     TestApp {
         address,
         db_pool: connection_pool,
@@ -143,7 +144,8 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .expect("Failed to create database.");
 
     // Migrate database
-    let connection_pool = PgPool::connect(&config.connection_string().expose_secret()) .await
+    let connection_pool = PgPool::connect(&config.connection_string().expose_secret())
+        .await
         .expect("Failed to connect to Postgres.");
     sqlx::migrate!("./migrations")
         .run(&connection_pool)
