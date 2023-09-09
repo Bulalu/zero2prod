@@ -23,6 +23,7 @@ pub fn run(listener: TcpListener, db_pool: PgPool) -> Result<Server, std::io::Er
             // Attach the cloned database connection to the App.
             .app_data(db_pool.clone())
     })
+
         // Bind the server to the provided TcpListener.
         .listen(listener)?
         // Start the server and begin listening for requests.
