@@ -2,7 +2,7 @@ use actix_web::{web, HttpResponse};
 use sqlx::PgPool;
 use chrono::Utc;
 use uuid::Uuid;
-use unicode_segmentation::UnicodeSegmentation;
+
 use crate::domain::{NewSubscriber, SubscriberName};
 
 
@@ -25,7 +25,7 @@ pub async fn subscribe(
 ) -> HttpResponse {
     let new_subscriber = NewSubscriber {
         email: _form.0.email,
-        name: SubscriberName::parse(_form.0.name), };
+        name: SubscriberName::parse(_form.0.name).expect("Name validation failed."), };
 
     match insert_subscriber(&pool, &new_subscriber).await
     {
