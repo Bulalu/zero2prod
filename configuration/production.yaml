@@ -3,4 +3,4 @@ application:
     host: 0.0.0.0
 
 database:
-    require-ssl: true
+    require_ssl: true

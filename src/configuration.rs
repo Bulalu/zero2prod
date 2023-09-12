@@ -28,6 +28,7 @@ pub struct ApplicationSettings {
 }
 impl DatabaseSettings {
     pub fn with_db(&self) -> PgConnectOptions {
+
         let mut options = self.without_db().database(&self.database_name);
         options.log_statements(tracing::log::LevelFilter::Trace);
         options
@@ -64,7 +65,8 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     // Layer on the environment-specific values.
     settings.merge( config::File::from(configuration_directory.join(environment.as_str())).required(true),
     )?;
-    // Add in settings from environment variables (with a prefix of APP and '__' as separator) // E.g. `APP_APPLICATION__PORT=5001 would set `Settings.application.port`
+    // Add in settings from environment variables (with a prefix of APP and '__' as separator)
+    // E.g. `APP_APPLICATION__PORT=5001 would set `Settings.application.port`
     settings.merge(config::Environment::with_prefix("app").separator("__"))?;
     settings.try_into()
 }
