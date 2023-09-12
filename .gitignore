@@ -2,3 +2,6 @@
 .env
 llvm-11-dev_11.0.1-2_arm64.deb
 env
+
+/scripts/fasty.sh
+./scripts/fasty.sh
